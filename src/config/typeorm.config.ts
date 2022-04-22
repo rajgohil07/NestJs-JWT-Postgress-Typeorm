@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/entities/user.entity';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 // entity listing

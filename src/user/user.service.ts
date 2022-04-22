@@ -9,7 +9,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
+import { constants } from 'src/helpers/constant';
 
 dotenv.config();
 @Injectable()
@@ -37,9 +38,7 @@ export class UserService {
     });
     // if email exist in the database throw error
     if (findEmailExist) {
-      throw new BadRequestException(
-        'This Email is already exist in the system',
-      );
+      throw new BadRequestException(constants.EMAIL_ALREADY_EXIST);
     }
     const createUser = this.userRepository.create(CreateUserObject);
     return this.userRepository.save(createUser);
@@ -55,7 +54,7 @@ export class UserService {
       where: { Email: lowerEmail },
     });
     if (!findData) {
-      throw new NotFoundException('Provided email does not found!');
+      throw new NotFoundException(constants.EMAIL_NOT_FOUND);
     }
     const validPassword = await bcrypt.compare(Password, findData.Password);
     if (validPassword) {
@@ -70,6 +69,6 @@ export class UserService {
       });
       return { Token: generatedToken };
     }
-    throw new UnauthorizedException('Sorry, your password is invalid');
+    throw new UnauthorizedException(constants.INVALID_PASSWORD);
   }
 }
