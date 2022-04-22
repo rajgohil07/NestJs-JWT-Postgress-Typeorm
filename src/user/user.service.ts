@@ -17,7 +17,11 @@ export class UserService {
   ) {}
 
   // register the user into the database
-  async registerUser(Name: string, Email: string, Password: string) {
+  async registerUser(
+    Name: string,
+    Email: string,
+    Password: string,
+  ): Promise<UserEntity> {
     const lowerEmail = Email.toLowerCase();
     const hashPassword = await bcrypt.hash(Password, 10);
     const CreateUserObject = {
@@ -39,7 +43,7 @@ export class UserService {
   }
 
   // login into system
-  async loginSystem(Email: string, Password: string) {
+  async loginSystem(Email: string, Password: string): Promise<UserEntity> {
     const lowerEmail = Email.toLowerCase();
     const findData = await this.userRepository.findOne({
       where: { Email: lowerEmail },

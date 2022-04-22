@@ -1,4 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { UserEntity } from './entities/user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -11,7 +12,7 @@ export class UserController {
     @Body('Name') Name: string,
     @Body('Email') Email: string,
     @Body('Password') Password: string,
-  ) {
+  ): Promise<UserEntity> {
     return this.userService.registerUser(Name, Email, Password);
   }
 
@@ -20,7 +21,7 @@ export class UserController {
   loginSystem(
     @Body('Email') Email: string,
     @Body('Password') Password: string,
-  ) {
+  ): Promise<UserEntity> {
     return this.userService.loginSystem(Email, Password);
   }
 }
