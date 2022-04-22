@@ -21,7 +21,7 @@ export class UserController {
   loginSystem(
     @Body('Email') Email: string,
     @Body('Password') Password: string,
-  ): Promise<UserEntity> {
+  ): Promise<{ Token: string }> {
     return this.userService.loginSystem(Email, Password);
   }
 }

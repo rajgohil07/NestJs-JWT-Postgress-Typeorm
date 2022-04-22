@@ -1,4 +1,6 @@
 import bcrypt from 'bcryptjs';
+import JWT from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import {
   BadRequestException,
   Injectable,
@@ -9,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 
+dotenv.config();
 @Injectable()
 export class UserService {
   constructor(
@@ -43,7 +46,10 @@ export class UserService {
   }
 
   // login into system
-  async loginSystem(Email: string, Password: string): Promise<UserEntity> {
+  async loginSystem(
+    Email: string,
+    Password: string,
+  ): Promise<{ Token: string }> {
     const lowerEmail = Email.toLowerCase();
     const findData = await this.userRepository.findOne({
       where: { Email: lowerEmail },
@@ -53,7 +59,16 @@ export class UserService {
     }
     const validPassword = await bcrypt.compare(Password, findData.Password);
     if (validPassword) {
-      return findData;
+      // if provided password is true then generate token
+      const objData = {
+        ID: findData.ID,
+        Name: findData.Name,
+        Email: findData.Email,
+      };
+      const generatedToken = await JWT.sign(objData, process.env.TOKEN_SECRET, {
+        expiresIn: process.env.TOKEN_EXPIRES_IN,
+      });
+      return { Token: generatedToken };
     }
     throw new UnauthorizedException('Sorry, your password is invalid');
   }
