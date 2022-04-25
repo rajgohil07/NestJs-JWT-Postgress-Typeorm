@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { constants } from 'src/helpers/constant';
 
@@ -67,8 +67,25 @@ export class UserService {
       const generatedToken = await JWT.sign(objData, process.env.TOKEN_SECRET, {
         expiresIn: process.env.TOKEN_EXPIRES_IN,
       });
-      return { Token: generatedToken };
+      return { Token: `Bearer ${generatedToken}` };
     }
     throw new UnauthorizedException(constants.INVALID_PASSWORD);
+  }
+
+  // get user listing
+  async getAllUserListing(
+    req: Request & { user: { ID: number; Name: string; Email: string } },
+  ) {
+    const { user } = req;
+    const findData = await this.userRepository.find({
+      where: {
+        ID: Not(user.ID),
+      },
+      select: ['ID', 'Name', 'Email'],
+    });
+    return {
+      currentUser: user,
+      AllUserListing: findData,
+    };
   }
 }
